@@ -25,6 +25,11 @@ module.exports = {
         }),
         new MiniCSSExtractPlugin()
     ],
+    resolve: {
+		alias: {
+			'timers/promises': 'isomorphic-timers-promises'
+		}
+	},
     module:
     {
         rules:
@@ -89,4 +94,5 @@ module.exports = {
                 }
         ]
     }
+   
 }

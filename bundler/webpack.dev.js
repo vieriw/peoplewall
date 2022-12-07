@@ -2,6 +2,7 @@ const path = require('path')
 const { merge } = require('webpack-merge')
 const commonConfiguration = require('./webpack.common.js')
 const ip = require('internal-ip')
+
 const portFinderSync = require('portfinder-sync')
 
 const infoColor = (_message) =>
@@ -21,8 +22,9 @@ module.exports = merge(
             open: true,
             https: false,
             allowedHosts: 'all',
-            hot: false,
-            watchFiles: ['src/**', 'static/**'],
+            hot: true,
+            watchFiles: ['src/**', 'src/components/**','static/**'],
+          
             static:
             {
                 watch: true,
