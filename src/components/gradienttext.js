@@ -4,8 +4,9 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import TWEEN from '@tweenjs/tween.js';
 
 class GradientText{
-    constructor(scene,VShader, FShader,  color1,color2,color3) {
+    constructor(scene,VShader, FShader,  color1,color2,color3,slower) {
       this.scene = scene;
+      this.slower= slower;
       this.FShader= FShader;
       this.VShader= VShader;
       this.ShaderMaterial = new THREE.ShaderMaterial( {
@@ -48,16 +49,16 @@ class GradientText{
        this.object.position.copy(start)
        this.t1=new TWEEN.Tween(this.object.position)
        .delay(1400)
-       .to( {x: target.x, y:target.y, z:target.z},1800)
-       .easing(TWEEN.Easing.Quadratic.Out)
+       .to( {x: target.x, y:target.y, z:target.z},3200 +this.slower)
+       .easing(TWEEN.Easing.Quartic.InOut)
        .start()
        .onComplete( ()=> {
-          tl2.delay(8800).start()
+          tl2.delay(10800 +this.slower).start()
        })
 
        const tl2 = new TWEEN.Tween(this.object.position)
-       .to({x: target2.x, y:target2.y, z:target2.z},1600)
-        .easing(TWEEN.Easing.Quadratic.InOut)
+       .to({x: target2.x, y:target2.y, z:target2.z},2200 +this.slower)
+        .easing(TWEEN.Easing.Quartic.InOut)
        
        
     }

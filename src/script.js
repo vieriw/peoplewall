@@ -10,9 +10,12 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js'
 import { BgPlane} from './components/bgplane'; 
-import { BgPlaneSpark} from './components/bgplanespark'; 
-import { BgPlaneSpark2} from './components/bgplanespark2'; 
+
+//import { BgPlaneSpark} from './components/bgplanespark'; 
+//import { BgPlaneSpark2} from './components/bgplanespark2'; 
+import { DotSpark} from './components/dotspark'; 
 import { BgText} from './components/bgtext';
+import { S5BgText} from './components/s5bgtext';
 import { S1TitleText} from './components/s1titletext';
 import { S2TitleText} from './components/s2titletext';
 import { S2TitleRedText} from './components/s2titleredtext';
@@ -23,6 +26,14 @@ import { GradientText} from './components/gradienttext';
 import { BgSpark} from './components/bgspark';
 import { S1BgMoon} from './components/s1bgmoon'; 
 import { S2BgMoon} from './components/s2bgmoon'; 
+import { S5BgMoon1} from './components/s5bgmoon1';
+import { S5BgMoon2} from './components/s5bgmoon2';
+import { S5TitleRedText} from './components/s5titleredtext';
+import { S5TitleText} from './components/s5titletext';
+import { S5DescriptionText} from './components/s5descriptiontext';
+import { S5Description2Text} from './components/s5description2text';
+import { ProjectCase} from './components/projectCase'; 
+import { ProjectCase2} from './components/projectCase2'; 
 import { GameObjectManager} from './components/gameobjectmanager'; 
 import { Geometry} from './components/geometry';
 import Config from './data/config';
@@ -31,13 +42,13 @@ import {
 	setImmediate,
 	setInterval
 } from 'isomorphic-timers-promises';
-
+import Stats from 'stats.js'
 const texts=[];
 const clock = new THREE.Clock();
 const settings = {
-    color1: new THREE.Color(0x04072A),
-    color2: new THREE.Color(0x151744), 
-    color3: new THREE.Color(0x684C65),
+    color1: new THREE.Color(0x030728),
+    color2: new THREE.Color(0x141642), 
+    color3: new THREE.Color(0x36212E),
     color4: new THREE.Color(0x608CFF),
     color5: new THREE.Color(0xFF008A),
     color6: new THREE.Color(0x9FBA59),
@@ -62,15 +73,21 @@ const fragmentShader = require('./shaders/test.frag');
 const bgPlaneS1VShader = require('./shaders/bgPlane.vert');
 const bgPlaneS1FShader = require('./shaders/bgPlaneFbm.frag');
 const bgPlaneS2FShader = require('./shaders/bgPlane.frag');
-
-const bgPlaneSparkFShader = require('./shaders/bgPlaneSpark.frag');
+const bgPlaneS5FShader = require('./shaders/bgPlane5.frag');
+// const bgPlaneSparkFShader = require('./shaders/bgPlaneSpark.frag');
 const bgGradientTextFShader = require('./shaders/bgGradientText.frag');
+
+const dotSparkVShader = require('./shaders/dotSpark.vert');
+const dotSparkFShader = require('./shaders/dotSpark.frag');
+
 
 const bgCircleFShader = require('./shaders/bgCircle.frag');
 const bgCircleVShader = require('./shaders/bgCircle.vert');
 
 const bgMoonS2FShader = require('./shaders/s2BgMoon.frag');
 const bgMoonS1FShader = require('./shaders/s1BgMoon.frag');
+const bgMoon1S5FShader = require('./shaders/s5BgMoon1.frag');
+const bgMoon2S5FShader = require('./shaders/s5BgMoon2.frag');
 const bgMoonVShader = require('./shaders/bgMoon.vert');
 
 /////////////////////////////////////////////////////////////////////////
@@ -78,26 +95,30 @@ const bgMoonVShader = require('./shaders/bgMoon.vert');
 const container = document.createElement('div')
 document.body.appendChild(container)
 
+
+// const stats = new Stats()
+// stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+// document.body.appendChild(stats.dom)
 /////////////////////////////////////////////////////////////////////////
 ///// SCENE CREATION
 const scene = new THREE.Scene()
-scene.background = new THREE.Color('#ffffff')
+//scene.background = new THREE.Color('#ffffff')
 
 /////////////////////////////////////////////////////////////////////////
 ///// RENDERER CONFIG
-const renderer = new THREE.WebGLRenderer({ antialias: true}) // turn on antialias
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }) // turn on antialias
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)) //set pixel ratio
 renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
-renderer.outputEncoding = THREE.sRGBEncoding // set color encoding
+//renderer.outputEncoding = THREE.sRGBEncoding // set color encoding
 container.appendChild(renderer.domElement) // add the renderer to html div
 const gameObjectManager = new GameObjectManager(scene);
 /////////////////////////////////////////////////////////////////////////
 ///// CAMERAS CONFIG
-// const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 200)
-// camera.position.set(0,0,80)
+// const camera = new THREE.PerspectiveCamera(145, window.innerWidth / window.innerHeight, 1,1200)
+//  camera.position.set(0,0,200)
 // scene.add(camera)
 
-const camera = new THREE.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 100);
+const camera = new THREE.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 1000);
 camera.position.set(0,0,15)
 scene.add( camera );
 
@@ -119,8 +140,9 @@ const controls = new OrbitControls(camera, renderer.domElement)
 
 /////////////////////////////////////////////////////////////////////////
 ///// SCENE LIGHTS
-const ambient = new THREE.AmbientLight(0xffffff, 0.82)
-scene.add(ambient)
+//  const ambient = new THREE.AmbientLight(0xffffff, 0.82)
+ 
+// scene.add(ambient)
 // const spotLight = new THREE.SpotLight( 0xffffff, 5 );
 // spotLight.position.set( 25, 50, 25 );
 // spotLight.angle = Math.PI / 6;
@@ -174,47 +196,54 @@ circleShaderMaterial.transparent = true;
 // scene.add( bgCircle );======
 //bgCircle.position.set(-800, -300, 0.01);
 
-const bgPlane= new BgPlane(scene, bgPlaneS1VShader,bgPlaneS1FShader,0.0, settings.color1, settings.color2,settings.color3);
-gameObjectManager.addGameObject(bgPlane)
+
 
 console.log('It will be printed 1-st');
-async function scene1() {
-
-//    console.log('bbbw');
-   const bgText = new BgText(scene);
-   
-   const s1BgMoon = new  S1BgMoon(scene,bgMoonVShader, bgMoonS1FShader, new THREE.Color(0xffffff),new THREE.Color(0x265164));
-   gameObjectManager.addGameObject(s1BgMoon)
-   await setTimeout(5000);
-   const s1TitleText = new S1TitleText(scene);
-   const s1DescriptionText = new S1DescriptionText(scene);
-   const gradientText = new GradientText(scene,bgPlaneS1VShader,bgGradientTextFShader, settings.color1, settings.color2,settings.color3);
-   gameObjectManager.addGameObject(gradientText);
+async function scene1(slower) {
+    const bgPlane= new BgPlane(scene, bgPlaneS1VShader,bgPlaneS1FShader,0.0, settings.color1, settings.color2,settings.color3);
+    gameObjectManager.addGameObject(bgPlane)
     
+   const bgText = new BgText(scene, slower);
+   const s1BgMoon = new  S1BgMoon(scene,bgMoonVShader, bgMoonS1FShader, new THREE.Color(0xffffff),new THREE.Color(0x265164) ,slower);
+   gameObjectManager.addGameObject(s1BgMoon)
+   await setTimeout(2000);
+   const s1TitleText = new S1TitleText(scene,slower);
+   const s1DescriptionText = new S1DescriptionText(scene,slower);
+   const gradientText = new GradientText(scene,bgPlaneS1VShader,bgGradientTextFShader, settings.color1, settings.color2,settings.color3,slower);
+   gameObjectManager.addGameObject(gradientText);
 
-
-
-   await setTimeout(1000);
    console.log('It will be printed 4-rd with delay')
-   scene2();
+  
+    await setTimeout(7000+slower);
+    console.log('bgplanefadeout');
+    bgPlane.fadeOut();
+    scene2(slower);
 }
 
-async function scene2() {
-await setTimeout(9000);
-    console.log('bgplanefadeout');
-    await setTimeout(1000);
+async function scene2(slower) {
+    
+     await setTimeout(9000+slower*2);
 
-    bgPlane.fadeOut();
+    const s2TitleText = new S2TitleText(scene,slower);
+    const s2TitleRedText = new S2TitleRedText(scene,slower);
+    const s2DescriptionText = new S2DescriptionText(scene,slower);
+    const s2Description2Text = new S2Description2Text(scene,slower);
+    
+    await setTimeout(100);
+    const dotSpark= new DotSpark(scene, dotSparkVShader,dotSparkFShader, 0.1, new THREE.Vector3(-1200,-40,0),4.5,1,slower);
+    gameObjectManager.addGameObject(dotSpark)
+    await setTimeout(1500);
+    const dotSpark2= new DotSpark(scene, dotSparkVShader,dotSparkFShader, 0.1, new THREE.Vector3( 1400,-540,0),3.5,2,slower);
+    gameObjectManager.addGameObject(dotSpark2)
 
-    const s2TitleText = new S2TitleText(scene);
-    const s2TitleRedText = new S2TitleRedText(scene);
-    const s2DescriptionText = new S2DescriptionText(scene);
-    const s2Description2Text = new S2Description2Text(scene);
-   const bgPlaneSpark= new BgPlaneSpark(scene, bgPlaneS1VShader,bgPlaneSparkFShader,-0.01, );
-   gameObjectManager.addGameObject(bgPlaneSpark)
-   const bgPlaneSpark2= new BgPlaneSpark2(scene, bgPlaneS1VShader,bgPlaneSparkFShader,-0.01, );
-   gameObjectManager.addGameObject(bgPlaneSpark2)
-   const bgSparks = new BgSpark(scene);
+//    const bgPlaneSpark= new BgPlaneSpark(scene, bgPlaneS1VShader,bgPlaneSparkFShader,-0.01, );
+//    gameObjectManager.addGameObject(bgPlaneSpark)
+//    const bgPlaneSpark2= new BgPlaneSpark2(scene, bgPlaneS1VShader,bgPlaneSparkFShader,-0.01, );
+//    gameObjectManager.addGameObject(bgPlaneSpark2)
+    const s2BgMoon = new  S2BgMoon(scene,bgMoonVShader, bgMoonS2FShader, settings.color4, settings.color5,slower);
+    gameObjectManager.addGameObject(s2BgMoon)
+    await setTimeout(3000+slower/2);
+   const bgSparks = new BgSpark(scene,slower);
    gameObjectManager.addGameObject(bgSparks)
 
   // const bgPlane2= new BgPlane(scene, bgPlaneS1VShader,bgPlaneS2FShader,-0.01, settings.color1, settings.color2,settings.color3);
@@ -222,22 +251,43 @@ await setTimeout(9000);
     // gameObjectManager.addGameObject(bgPlane2);
     console.log('removebgplane');
     // gameObjectManager.removeGameObject(bgPlane);
-     await setTimeout(2000);
-    const s2BgMoon = new  S2BgMoon(scene,bgMoonVShader, bgMoonS2FShader, settings.color4, settings.color5);
-    gameObjectManager.addGameObject(s2BgMoon)
- 
-     //  const bgSparks = new BgSpark(scene);
- //   gameObjectManager.addGameObject(bgSparks)
+    
     await setTimeout(3000);
    // gameObjectManager.removeGameObject(bgSparks)
- //   bgSparks.fadeOut(3000);
-    await setTimeout(3000);
+    
+    await setTimeout(12000);
+    dotSpark.fadeOut(3000);
+    await setTimeout(1000);
+    dotSpark2.fadeOut(3000);
    // gameObjectManager.removeGameObject(bgSparks)
 
 }
+async function scene5(slower) {
+ //   const s5ProjectCase = new ProjectCase(scene, slower);
+     const s5ProjectCase2 = new ProjectCase2(scene, slower);
+    const s5BgPlane= new BgPlane(scene, bgPlaneS1VShader,bgPlaneS5FShader,0.0, settings.color1, new THREE.Color(0x241C55),new THREE.Color(0x2A566D) );
+   // const s5BgPlane= new BgPlane(scene, bgPlaneS1VShader,bgPlaneS5FShader,0.0, settings.color1, new THREE.Color(0xff0000),new THREE.Color(0x36CEA1));
+    gameObjectManager.addGameObject(s5BgPlane);
+     
+    const s5BgText = new S5BgText(scene,slower);
+    const s5BgMoon1 = new S5BgMoon1(scene,bgMoonVShader, bgMoon1S5FShader, new THREE.Color(0x76D6FF),new THREE.Color(0x9554FF),slower);
+    gameObjectManager.addGameObject(s5BgMoon1)
 
-scene1();
+    const s5BgMoon2 = new S5BgMoon2(scene,bgMoonVShader, bgMoon2S5FShader, new THREE.Color(0x1481B0),new THREE.Color(0xD3FF54),slower);
+    gameObjectManager.addGameObject(s5BgMoon2)
 
+    // await setTimeout(5000);
+    const s5TitleRedText = new S5TitleRedText(scene,slower);
+    const s5TitleText = new S5TitleText(scene,slower);
+    const s5DescriptionText = new S5DescriptionText(scene,slower);
+    const s5Description2Text = new S5Description2Text(scene,slower);
+    await setTimeout(1000);
+    console.log('It will be printed 5rd with delay')
+
+ }
+  scene1(3000);
+ //scene2(3000);
+// scene5(3000);
 
 renderer.domElement.addEventListener('dblclick', onDoubleClick, false)
 function onDoubleClick(event) {
@@ -305,6 +355,8 @@ function setOrbitControlsLimits(){
 /////////////////////////////////////////////////////////////////////////
 //// RENDER LOOP FUNCTION
 function rendeLoop() {
+   // stats.begin();
+
     TWEEN.update() // update animations
 
     let delta = clock.getDelta();
@@ -317,6 +369,7 @@ function rendeLoop() {
     controls.update() // update orbit controls
  //   bgPlaneShaderMaterial.uniforms.uColor2.value= new THREE.Color(1, 1, 0);
     renderer.render(scene, camera) // render the scene using the camera
+   // stats.end();
     requestAnimationFrame(rendeLoop) //loop the render function
     
 }

@@ -30,7 +30,7 @@ void main () {
  // if (circleCanvas<0.01) discard;
   vec2 st1 = vUv;
  
-  vec2 translate =vec2(cos(uTime*0.5)*0.3+0.2,sin(uTime*0.7+0.0)*0.2-0.2);
+  vec2 translate =vec2(cos(uTime*0.3)*0.3+0.2,sin(uTime*0.4+0.0)*0.2-0.2);
   //translate= vec2(0.4,0.4);
 
   st1 += translate*0.7110;

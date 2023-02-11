@@ -4,8 +4,9 @@ import { Vector3 } from 'three';
 
 class BgSpark{
 //export default class Geometry {
-    constructor(scene) {
+    constructor(scene,slower) {
       this.scene = scene;
+      this.slower= slower;
       this.object = new THREE.Group();
       this.init();
     }
@@ -33,7 +34,7 @@ class BgSpark{
     }
     addSparks  = (material ) =>{
       
-      const sparkGeometry = new THREE.PlaneGeometry(560, 560);
+      const sparkGeometry = new THREE.PlaneGeometry(120, 120);
       const sp1= new Vector3(-1200,-250,0.1) 
       this.addSpark (sparkGeometry,material,sp1,0.9)
       const sp2= new Vector3(1500,150,0.1) 
@@ -53,30 +54,29 @@ class BgSpark{
       spark.posBase= pos
       spark.scaleBase= scaleBase
       this.object.add( spark );
-      const duration=1200+Math.random()*2400
+      const duration=1200+Math.random()*1600
       const scale= Math.random()*0.2+ scaleBase;
       this.entryAnimate( spark, Math.random()*600,duration ,new THREE.Vector3(scale,scale,scale))
 
     }
     sparkUpdate(spark){
       spark.position.set( spark.posBase.x-Math.random() * 400+200, spark.posBase.y+Math.random() * 200 - 100,0.1 );
-      const duration=1200+Math.random()*2400*spark.scaleBase
+      const duration=1600+Math.random()*2400*spark.scaleBase
       const scale= Math.random()*0.2+spark.scaleBase;
-      this.entryAnimate(spark, 200, duration, new THREE.Vector3(scale,scale,scale) )
+      this.entryAnimate2(spark, 200+this.slower/2, duration, new THREE.Vector3(scale,scale,scale) )
     }
     entryAnimate( scaleObject,delay,duration,scale1){
       this.s1= new TWEEN.Tween( scaleObject.scale)
       .delay(1000+delay)
-      .to( {x:  scale1.x, y:scale1.y, z:scale1.z},duration)
+      .to( {x:  scale1.x, y:scale1.y, z:scale1.z},duration+this.slower/3)
       .easing(TWEEN.Easing.Quadratic.Out)
       .start()
       .yoyo(true)
       .repeat(1)
       .onComplete( ()=> {
-        this.sparkUpdate(scaleObject);
+         this.sparkUpdate(scaleObject);
         //this.object.remove(scaleObject)
         //console.log(this.game)
-       
        })
       // this.object.position.copy(start)
       // this.t1=new TWEEN.Tween(this.object.position)
@@ -89,10 +89,35 @@ class BgSpark{
       // })
       // const tl2 = new TWEEN.Tween(this.object.position)
       // .to({x: target2.x, y:target2.y, z:target2.z},1600)
-      //  .easing(TWEEN.Easing.Quadratic.InOut)
-      
+      //  .easing(TWEEN.Easing.Quadratic.InOu
       
    }
+   entryAnimate2( scaleObject,delay,duration,scale1){
+    this.s1= new TWEEN.Tween( scaleObject.scale)
+    .delay(1000+delay)
+    .to( {x:  scale1.x, y:scale1.y, z:scale1.z},duration+this.slower/3)
+    .easing(TWEEN.Easing.Quadratic.Out)
+    .start()
+    .yoyo(true)
+    .repeat(1)
+  
+    // this.object.position.copy(start)
+    // this.t1=new TWEEN.Tween(this.object.position)
+    // .delay(1400)
+    // .to( {x: target.x, y:target.y, z:target.z},1800)
+    // .easing(TWEEN.Easing.Quadratic.Out)
+    // .start()
+    // .onComplete( ()=> {
+    //    tl2.delay(8800).start()
+    // })
+    // const tl2 = new TWEEN.Tween(this.object.position)
+    // .to({x: target2.x, y:target2.y, z:target2.z},1600)
+    //  .easing(TWEEN.Easing.Quadratic.InOu
+    
+ }
+
+
+
     update(delta) {
        
     }

@@ -30,7 +30,7 @@ void main () {
   vec2 _vUv=vec2( vUv.x, vUv.y);
   //_vUv= rotate(_vUv, 0.5);
   _vUv*=0.6;
-  _vUv.x-= 0.2*uTime;
+  _vUv.x-= 0.1*uTime;
  
   _vUv= rotate(_vUv, 0.4);
    _vUv = fract(_vUv);

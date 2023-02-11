@@ -2,8 +2,9 @@ import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
 
 class S2BgMoon{
-    constructor(scene, VShader,FShader,color1,color2) {
+    constructor(scene, VShader,FShader,color1,color2,slower) {
       this.scene = scene;
+      this.slower= slower;
       this.VShader= VShader;
       this.FShader= FShader;
       this.moonShaderMaterial = new THREE.ShaderMaterial( {
@@ -34,14 +35,14 @@ class S2BgMoon{
       this.scene.add(this.object);
      // this.scene.updateGroup.add(bgMoon)
     //  console.log(this.scene.updateGroup)
-     this.entryAnimate(new THREE.Vector3(-2500,-1000,0.2),new THREE.Vector3(-1100,-890,0.2),new THREE.Vector3(-2200,-990,10.2) )
+     this.entryAnimate(new THREE.Vector3(-2700,-1000,0.2),new THREE.Vector3(-1100,-890,0.2),new THREE.Vector3(-2700,-990,10.2) )
     }
     
     entryAnimate( start,target,target2){
       this.object.position.copy(start)
       //  console.log(this.sp1)
        this.t1=new TWEEN.Tween(this.object.position)
-       .to( {x: target.x, y:target.y, z:target.z},8000)
+       .to( {x: target.x, y:target.y, z:target.z},8000+this.slower)
      //  .yoyo(true)
       // .repeat(Infinity)
        .easing(TWEEN.Easing.Quadratic.InOut)
@@ -50,12 +51,20 @@ class S2BgMoon{
           this.tl2.start()
        })
 
-       this.tl2 = new TWEEN.Tween(this.object.position)
-       .to({x: target2.x, y:target2.y, z:target2.z},8000)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .yoyo(true)
-        .repeat(Infinity)
+       
+     this.tl2 = new TWEEN.Tween(this.object.position)
+        .to({x: target.x-300, y:target.y-50, z:target.z},7000+this.slower)
+         .easing(TWEEN.Easing.Quartic.InOut)
+         .onComplete( ()=> {
+           this.tl3.delay(0).start()
+        })
+ 
+      this.tl3 = new TWEEN.Tween(this.object.position)
+        .to({x: target2.x, y:target2.y, z:target2.z},7000+this.slower)
+         .easing(TWEEN.Easing.Quartic.InOut)
+        
       
+ 
     }
     update(delta){
      // console.log("!")

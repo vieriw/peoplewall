@@ -3,8 +3,9 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 // import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js'
 import TWEEN from '@tweenjs/tween.js';
 class BgText{
-    constructor(scene) {
+    constructor(scene,slower) {
       this.scene = scene;
+       this.slower=slower;
       //this.geo = null;
       this.init();
     }
@@ -12,9 +13,9 @@ class BgText{
     init() {
         const fontloader = new FontLoader();
       //  const scene= this.scene;
-     fontloader.load( 'fonts/helvetiker_bold.typeface.json',    ( font )=> {
-      //    fontloader.load( 'fonts/Roboto_Light_Regular.json',    ( font )=> {
-        
+     fontloader.load( 'fonts/Roboto_Bold.json',    ( font )=> {
+     // fontloader.load( 'fonts/Roboto_Light_Regular.json',    ( font )=> {
+       // fontloader.load( 'fonts/Inter_Tight_Light_Regular.json',    ( font )=> { 
             const color = 0x006699;
             const matLite = new THREE.MeshBasicMaterial( {
                 color: new THREE.Color(0x9BA4AB),
@@ -86,43 +87,28 @@ class BgText{
     //   this.scene.add(mesh);
     // }
 
-    animate(){
-      
-      this.object.position.set(-3200-Math.random() * 200, -Math.random() * 400,0.3)  
-        new TWEEN.Tween(  this.object.position)
-        .to( { x:3200},9000)
-        //.yoyo(false)
-        //.repeat(Infinity)
-        //.dynamic(true)
-        .onComplete(()=>{
-          this.animate();
-        })
-        .delay(10)
-        .easing(TWEEN.Easing.
-          Sinusoidal.In)
-        .start()
-    }
+ 
 
     entryAnimate(target,target2){
       //   console.log (this.object)
       this.object.position.set(-3400-Math.random() * 200, -Math.random() * 400,0.3)  
          this.t1=new TWEEN.Tween(this.object.position)
          .delay(600)
-         .to( {x: target.x},6000)
+         .to( {x: target.x},11000+this.slower)
        //  .easing(TWEEN.Easing.Sinusoidal.In)
          .easing(TWEEN.Easing.Linear.None)
          
          .start()
          .onComplete( ()=> {
              this.object.position.set(-3400-Math.random() * 200, -Math.random() * 400,0.3) 
-             tl2.delay(600).start()
+             tl2.delay(this.slower/2).start()
       })
       const tl2 = new TWEEN.Tween(this.object.position)
-      .to({x: target2.x},6000)
+      .to({x: target2.x},10000+this.slower)
       .easing(TWEEN.Easing.Linear.None)
        .onComplete( ()=> {
         this.object.position.set(-3400-Math.random() * 200, -Math.random() * 400,0.3) 
-        tl3.delay(600).start()
+        //tl3.delay(600).start()
         })
 
       const tl3 = new TWEEN.Tween(this.object.position)

@@ -2,8 +2,9 @@ import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import TWEEN from '@tweenjs/tween.js';
 class S2TitleRedText{
-    constructor(scene) {
+    constructor(scene,slower) {
       this.scene = scene;
+      this.slower= slower;
       //this.geo = null;
       this.object= new THREE.Group();
       this.init();
@@ -17,8 +18,9 @@ class S2TitleRedText{
         fontloader.load( 'fonts/Inter_Bold.json',    ( font )=> {
         
             const matLite = new THREE.MeshBasicMaterial( {
-                color: new THREE.Color(0xFF3E3E),
-                transparent: true,
+                 color: new THREE.Color(0xFF3E3E),
+                
+                transparent: false,
                 opacity: 1.0,
                 side: THREE.DoubleSide
             } );
@@ -65,18 +67,18 @@ class S2TitleRedText{
          this.object.position.copy(start)
          this.t1=new TWEEN.Tween(this.object.position)
          .delay(2000)
-         .to( {x: target.x, y:target.y, z:target.z},1800)
+         .to( {x: target.x, y:target.y, z:target.z},4200+this.slower)
        //  .yoyo(true)
         // .repeat(Infinity)
-         .easing(TWEEN.Easing.Quadratic.Out)
+         .easing(TWEEN.Easing.Quartic.InOut)
          .start()
          .onComplete( ()=> {
-             tl2.delay(8000).start()
+             tl2.delay(8000+this.slower*2).start()
          })
    
          const tl2 = new TWEEN.Tween(this.object.position)
-         .to({x: target2.x, y:target2.y, z:target2.z},1600)
-          .easing(TWEEN.Easing.Quadratic.InOut)
+         .to({x: target2.x, y:target2.y, z:target2.z},4800+this.slower)
+          .easing(TWEEN.Easing.Quartic.InOut)
        }
 
     update(delta){

@@ -36,13 +36,13 @@ void main () {
   // gl_FragColor = vec4(mix(uColor1, uColor2, vUv.x),1.0);
   float aStepNoise= noise(uTime*0.3);
   float bStepNoise= noise(uTime*0.2+0.4);
-  vec2 vUvR= rotate(vUv, sin (uTime*0.35)*0.1-0.1);
+  vec2 vUvR= rotate(vUv, sin (uTime*0.35)*0.0-0.0);
 
-  float b = fract(vUvR.x*0.75);
-  float step1 = 0.0;
-  float step2 = 0.6- aStepNoise*0.15;
-  float step3 = 0.85- bStepNoise*0.15;
-  float step4 = 1.0;
+  float b =vUv.x;// fract(vUvR.x*0.75);
+  float step1 = 0.2;
+  float step2 = 0.8-sin(uTime*0.3+aStepNoise*0.05)*0.05;
+  float step3 = 1.05-sin(uTime*0.3)*0.05;
+  float step4 = 1.2;
  
 
   vec3 color = mix(uColor1, uColor2, smoothstep(step1, step2, b));

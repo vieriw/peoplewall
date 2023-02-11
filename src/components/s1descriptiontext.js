@@ -2,8 +2,9 @@ import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import TWEEN from '@tweenjs/tween.js';
 class S1DescriptionText{
-    constructor(scene) {
+    constructor(scene,slower) {
       this.scene = scene;
+      this.slower= slower;
       //this.geo = null;
       this.object= new THREE.Group();
       this.init();
@@ -85,19 +86,20 @@ class S1DescriptionText{
       this.object.position.copy(start)
       this.t1=new TWEEN.Tween(this.object.position)
       .delay(1000)
-      .to( {x: target.x, y:target.y, z:target.z},1800)
+      .to( {x: target.x, y:target.y, z:target.z},3200+this.slower)
     //  .yoyo(true)
      // .repeat(Infinity)
-      .easing(TWEEN.Easing.Quadratic.Out)
+      .easing(TWEEN.Easing.Quartic.InOut)
       .start()
       .onComplete( ()=> {
        
-          tl2.delay(8000).start()
+          tl2.delay(10000+this.slower).start()
       })
 
       const tl2 = new TWEEN.Tween(this.object.position)
-      .to({x: target2.x, y:target2.y, z:target2.z},1600)
-       .easing(TWEEN.Easing.Quadratic.InOut)
+      .to({x: target2.x, y:target2.y, z:target2.z},3200+this.slower)
+       .easing(TWEEN.Easing.Quartic.InOut)
+       
     }
 
     update(delta){

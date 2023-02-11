@@ -28,6 +28,7 @@ class BgPlane{
       const bgPlaneGeometry = new THREE.PlaneBufferGeometry(3648, 1200);
       this.object = new THREE.Mesh(  bgPlaneGeometry, this.bgPlaneShaderMaterial );
       this.object.position.z=this.z;
+   
       this.scene.add( this.object );
       
     }
